@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>GrabID Sample Application</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="./style.css"/>
+</head>
+
+<body class="text-center">
+<div class="card" style="width: 60rem">
+    <div class="card-info">
+        <textarea class="form-control" id="result" rows="30">Output</textarea>
+    </div>
+    <div class="card-body">
+        <button type="button" class="btn btn-primary btn-block" id="cleanup">CleanUp</button>
+        <button type="button" class="btn btn-primary btn-block" id="makeAuthorizationRequest">Make Authorization
+            Request
+        </button>
+        <button type="button" class="btn btn-primary btn-block" id="makeTokenRequest">Make Token Request</button>
+        <button type="button" class="btn btn-primary btn-block" id="makeImplicitAuthorizationRequest">Make Implicit
+            Authorization Request
+        </button>
+        <button type="button" class="btn btn-primary btn-block" id="makeTestEndpointRequest">Make Test Endpoint
+            Request
+        </button>
+    </div>
+</div>
+
+<script type="text/javascript" src="../dist/bundle.js"></script>
+<script type="text/javascript">
+    const openIdUrl = 'https://api.stg-myteksi.com/grabid/v1/oauth2'
+
+    let appConfig = {
+      clientId: '08044981144746ec80a870c605fe705b',
+      redirectUri: 'https://public.grab.com/app/redirect.html',
+      scope: ['openid', 'gid_test_scope_1', 'gid_test_scope_2', 'gid_test_scope_3'].join(' '),
+      acrValues: ['service:PASSENGER', 'consent_ctx:country=sg'].join(' '),
+    }
+
+    $(function () {
+      let application = new GrabID(openIdUrl, appConfig)
+
+      // authorize request handler
+      $('#makeAuthorizationRequest').on('click', function () {
+        application.getOpenIdConfiguration()
+          .then(() => {
+            application.makeAuthorizationRequest()
+          })
+          .catch(error => alert(error.toString()))
+
+      })
+
+      // token request handler
+      $('#makeTokenRequest').on('click', function () {
+        application.getOpenIdConfiguration()
+          .then(() => {
+            application.makeTokenRequest()
+              .then(() => {prettyPrint(GrabID.getResult())})
+              .catch(error => alert(error.toString()))
+          })
+          .catch(error => alert(error.toString()))
+      })
+
+      // implicit authorization request handler
+      $('#makeImplicitAuthorizationRequest').on('click', function () {
+        application.getOpenIdConfiguration()
+          .then(() => {
+            application.makeImplicitAuthorizationRequest()
+          })
+          .catch(error => alert(error.toString()))
+      })
+
+      // test endpoint request handler
+      $('#makeTestEndpointRequest').on('click', function () {
+        application.makeTestEndpointRequest().then(responseJSON => {
+          prettyPrint(responseJSON)
+        })
+      })
+
+      // cleanup handler
+      $('#cleanup').on('click', function () {
+        window.localStorage.clear()
+        window.location = '/app'
+      })
+    })
+
+    function prettyPrint (s) {
+      let pretty = JSON.stringify(s, undefined, 4)
+      $('#result').text(pretty)
+    }
+</script>
+</body>
+</html>

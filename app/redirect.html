@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>GrabID Redirect</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<div id="errorMsg"></div>
+<h3>
+    For more information on why this redirect page exists, please look:
+    <a href="https://tools.ietf.org/html/rfc6749#section-3.1.2.5">here</a>.
+</h3>
+
+<script type="text/javascript" src="../dist/bundle.js"></script>
+<script>
+    let returnUri = GrabID.getLoginReturnURI();
+
+  if (window.location.search !== '') {
+    try {
+      GrabID.handleAuthorizationCodeFlowResponse()
+      window.location.assign(returnUri)
+    } catch (e) {
+      let errObj = JSON.parse(e.message)
+      let errorHtml = `<h2>${errObj.name}</h2><p>${errObj.message}</p>`
+      errorHtml += `<p>Redirecting to ${returnUri} in 10 seconds.</p>`
+      document.getElementById('errorMsg').innerHTML = errorHtml
+      setTimeout(()=>{
+        window.location.assign(returnUri)
+      }, 10000)
+    }
+
+  } else if (window.location.hash !== '') {
+    try {
+      GrabID.handleImplicitFlowResponse()
+      window.location.assign(returnUri)
+    } catch (e) {
+      let errObj = JSON.parse(e.message)
+      let errorHtml = `<h2>${errObj.name}</h2><p>${errObj.message}</p>`
+      errorHtml += `<p>Redirecting to ${returnUri} in 10 seconds.</p>`
+      document.getElementById('errorMsg').innerHTML = errorHtml
+      setTimeout(()=>{
+        window.location.assign(returnUri)
+      }, 10000)
+    }
+  }
+</script>
+</body>
+
+</html>
