@@ -53,3 +53,7 @@ application.getOpenIdConfiguration()
   })
   .catch(error => alert(error.toString()))
 ```
+
+### License
+
+[MIT licensed](./LICENSE)
