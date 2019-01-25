@@ -12,7 +12,7 @@ Public release
 
 ##### CDN
 
-`https://unpkg.com/@grab-id/grab-id-client/dist/grabid-client-bundle.js`
+`https://unpkg.com/@grab-id/grab-id-client/dist/bundle.js`
 
 ### Authentication Flows
 
