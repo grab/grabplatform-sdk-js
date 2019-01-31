@@ -39,7 +39,6 @@ appConfig: Defines parameters needed to make an authorization request
 - scope: A comma separated list of scopes for which your application is requesting permission.
 - acrValues: Authentication Context Class Reference Values. This provides the context for your request, and the appropriate values will vary based on your use case.
 
-
 ## Authentication Flows
 
 Full example please refer [here](./app/index.html)
@@ -138,7 +137,9 @@ this.grabClient.getOpenIdConfiguration()
 
 ### Implicit Flow
 
-Make Implicit Authorization Request
+#### Step 1 - Make Implicit Authorization Request
+
+This code should be triggered when the user wants to log in using their grab credentials. Note that you are not collecting any information from the user - Grab will take care of authorizing the user and consent to any permissions you specify.
 
 ```javascript
 application.getOpenIdConfiguration()
@@ -152,6 +153,54 @@ Required Parameters: None
 Optional Parameters: loginReturnUri
 
 loginReturnUri: After the Grab authorization endpoint successfully authenticates the request, this value can be fetched on your redirect page via GrabID.getLoginReturnURI. If not provided, loginReturnUri defaults to the page the login request originated from.
+
+#### Step 2 - Receive and process results of authorization request
+
+Once the authorization request has successfully completed, the user will be redirected to the redirectUri you specified when instantiating the GrabID client. This should be a dedicated [redirect page](./app/redirect.html). There are a couple important things you need to do here:
+
+```javascript
+let returnUri = GrabID.getLoginReturnURI();
+GrabID.handleImplicitFlowResponse()
+window.location.assign(returnUri)
+```
+
+First, you need to make sure that the authorization was successful. GrabID.handleImplicitFlowResponse will process all of the values that came back from the authorization request and ensure that the user is logged in and has provided the appropriate consent.
+
+Next, you need to redirect the user to the appropriate page/route on your site. GrabID.getLoginReturnURI will provide the value, and then you need to route the user appropriately. In the case of our example, we use a simple window.location.assign to redirect the user manually.
+
+## IMPORTANT
+
+Make sure you handle the negative case, too! If the user failed to authenticate or failed to provide consent, you will need to handle that here. Refer to the sample [redirect page](./app/redirect.html) to see an example of how to handle failed authentication requests.
+
+#### Step 3 - Perform authorized operations
+
+In the implicit flow, there's a little less work needed to make calls to an endpoint that requires authentication.
+
+```javascript
+let tokenResult = GrabID.getResult();
+  window.fetch("https://grab.api.com/grabid/v1/oauth2/userinfo", {
+    method: 'GET',
+    headers: {
+      'Accept-Content': 'application/json; charset=utf-8',
+      Authorization: "Bearer " + tokenResult.accessToken,
+    },
+    mode: 'cors',
+  })
+  .then((response) => { 
+    response.json().then((userInfo) => {
+      this.setState({
+        userName: userInfo.name,
+        userEmail: userInfo.email,
+      });
+    });
+  })
+```
+
+Note that this is very similar to the auhorization flow, but we did not have to make an additional call to get a token. That's because the implicit flow directly returns a token that you can use to make requests instead of an access code that you exchange for a token.
+
+## Which to use - Authorization Code Flow or Implicit Flow?
+
+Unless you have a specific use case that requires you to use the Implicit flow, we highly recommend using the Authorization code flow. It does require a little more code to function, but it is also much more secure. Because the user must exchange an authorization code for an access token, it gives another layer of security.
 
 ## License
 
