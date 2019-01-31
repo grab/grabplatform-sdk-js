@@ -32,7 +32,7 @@
 
 <script type="text/javascript" src="../dist/bundle.js"></script>
 <script type="text/javascript">
-    const openIdUrl = 'https://api.stg-myteksi.com/grabid/v1/oauth2'
+    const openIdUrl = GrabID.getGrabUrls().PRODUCTION
 
     let appConfig = {
       clientId: '08044981144746ec80a870c605fe705b',
@@ -51,7 +51,6 @@
             application.makeAuthorizationRequest()
           })
           .catch(error => alert(error.toString()))
-
       })
 
       // token request handler

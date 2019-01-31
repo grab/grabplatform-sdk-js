@@ -31,7 +31,7 @@ export default class App {
       .catch(error => console.error('fail to get open id config', error))
   }
 
-  makeAuthorizationRequest () {
+  makeAuthorizationRequest (loginReturnUrl) {
     if (!this.openIDConfiguration) {
       throw new Error('Please fetch OpenID configuration first')
     }
@@ -41,12 +41,13 @@ export default class App {
       this.redirectUri,
       this.scope,
       AuthorizationRequest.RESPONSE_TYPE_CODE,
-      this.acrValues
+      this.acrValues,
+      loginReturnUrl
     )
     this.authorizationRequestHandler.performAuthorizationRequest(this.openIDConfiguration, authorizationRequest)
   }
 
-  makeImplicitAuthorizationRequest () {
+  makeImplicitAuthorizationRequest (loginReturnUrl) {
     if (!this.openIDConfiguration) {
       throw new Error('Please fetch OpenID configuration first')
     }
@@ -56,7 +57,8 @@ export default class App {
       this.redirectUri,
       this.scope,
       AuthorizationRequest.RESPONSE_TYPE_TOKEN,
-      this.acrValues
+      this.acrValues,
+      loginReturnUrl
     )
     this.authorizationRequestHandler.performAuthorizationRequest(this.openIDConfiguration, authorizationRequest)
   }
@@ -171,6 +173,13 @@ export default class App {
       idToken: Store.getItem('id_token'),
       nonce: Store.getItem('nonce'),
       state: Store.getItem('state')
+    }
+  }
+
+  static getGrabUrls () {
+    return {
+      STAGING: 'https://api.stg-myteksi.com/grabid/v1/oauth2',
+      PRODUCTION = 'https://api.grab.com/grabid/v1/oauth2',
     }
   }
 }
