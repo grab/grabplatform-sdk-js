@@ -179,7 +179,7 @@ export default class App {
   static getGrabUrls () {
     return {
       STAGING: 'https://api.stg-myteksi.com/grabid/v1/oauth2',
-      PRODUCTION = 'https://api.grab.com/grabid/v1/oauth2',
+      PRODUCTION: 'https://api.grab.com/grabid/v1/oauth2',
     }
   }
 }
