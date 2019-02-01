@@ -50,9 +50,9 @@ Full example please refer [here](./app/index.html)
 This code should be triggered when the user wants to log in using their grab credentials. Note that you are not collecting any information from the user - Grab will take care of authorizing the user and consent to any permissions you specify.
 
 ```javascript
-application.getOpenIdConfiguration()
+grabIdClient.getOpenIdConfiguration()
   .then(() => {
-    application.makeAuthorizationRequest()
+    grabIdClient.makeAuthorizationRequest()
   })
   .catch(error => alert(error.toString()))
 ```
@@ -87,9 +87,9 @@ Now that the user has been authorized, you can fetch the token and use it to mak
 Make Token Request
 
 ```javascript
-application.getOpenIdConfiguration()
+grabIdClient.getOpenIdConfiguration()
   .then(() => {
-    application.makeTokenRequest()
+    grabIdClient.makeTokenRequest()
       .then(() => {prettyPrint(GrabID.getResult())})
       .catch(error => alert(error.toString()))
   })
@@ -142,9 +142,9 @@ this.grabClient.getOpenIdConfiguration()
 This code should be triggered when the user wants to log in using their grab credentials. Note that you are not collecting any information from the user - Grab will take care of authorizing the user and consent to any permissions you specify.
 
 ```javascript
-application.getOpenIdConfiguration()
+grabIdClient.getOpenIdConfiguration()
   .then(() => {
-    application.makeImplicitAuthorizationRequest()
+    grabIdClient.makeImplicitAuthorizationRequest()
   })
   .catch(error => alert(error.toString()))
 ```
