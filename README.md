@@ -82,7 +82,7 @@ Make sure you handle the negative case, too! If the user failed to authenticate 
 
 #### Step 4 - Perform Authorized Operations
 
-Now that the user has been authorized, you can fetch the token and use it to make requests against endpoints that require authentication. There are two tools we'll need to use here: makeTokenRequest and GrabID.getResult.
+Now that the user has been authorized, you can fetch an access token and use it to make requests against endpoints that require authorization. There are two tools we'll need to use here: makeTokenRequest and GrabID.getResult.
 
 Make Token Request
 
@@ -95,7 +95,7 @@ grabIdClient.getOpenIdConfiguration()
   })
   .catch(error => alert(error.toString()))
 ```
-makeTokenRequest - This will make a request to the Grab ID endpoint to retrieve an access token that you can use to make authorized requests. Note that this call doesn't return anything you can act on directly. To actually get your token, you'll need to call...
+makeTokenRequest - This will make a request to the Grab ID endpoint to retrieve an access token that you can use to make authorized requests. Note that this call doesn't return anything you can act on directly. To actually get your token, you'll need to call:
 
 GrabID.getResult - This returns all of the information you need to make authorized requests against an endpoint, as well as the information needed to confirm a user's identity with Grab ID servers. Returns a response with the following information:
 
@@ -174,7 +174,7 @@ Make sure you handle the negative case, too! If the user failed to authenticate 
 
 #### Step 3 - Perform authorized operations
 
-In the implicit flow, there's a little less work needed to make calls to an endpoint that requires authentication.
+In the implicit flow, there's a little less work needed to make calls to an endpoint that requires authorization.
 
 ```javascript
 let tokenResult = GrabID.getResult();
