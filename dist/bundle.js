@@ -1305,7 +1305,13 @@
     _createClass(AuthorizationRequestHandler, [{
       key: "performAuthorizationRequest",
       value: function performAuthorizationRequest(configuration, request) {
-        Store.setItem('login_return_uri', window.location.href);
+        var loginReturnUri = window.location.href;
+
+        if (request.loginReturnUri !== undefined) {
+          loginReturnUri = request.loginReturnUri;
+        }
+
+        Store.setItem('login_return_uri', loginReturnUri);
         Store.setItem('nonce', nonce);
         Store.setItem('state', state);
         Store.setItem('code_verifier', codeVerifier);
@@ -1335,7 +1341,17 @@
 
     return AuthorizationRequestHandler;
   }();
-  var AuthorizationRequest = function AuthorizationRequest(clientId, redirectUri, scope, responseType, acrValues) {
+  /*
+  Defines parameters needed to make an authorization request
+  clientId: The Grab Client ID issued to the app developer by Grab.
+  redirectUri: The uri that the browser should redirect to after completing authorization. This must be one of the uris registered with Grab and is associated with your Client ID.
+  scope: A comma separated list of scopes for which your application is requesting permission.
+  responseType: The type of authorization expected in the response. Can be either a token or an access code
+  acrValues: Authentication Context Class Reference Values. This provides the context for your request, and the appropriate values will vary based on your use case.
+  loginReturnUri: Optional parameter - if provided, will store the provided value in local storage as the login return URI. If absent, window.location.href will be stored as the login return uri
+  */
+
+  var AuthorizationRequest = function AuthorizationRequest(clientId, redirectUri, scope, responseType, acrValues, loginReturnUri) {
     _classCallCheck(this, AuthorizationRequest);
 
     this.clientId = clientId;
@@ -1343,6 +1359,7 @@
     this.scope = scope;
     this.responseType = responseType;
     this.acrValues = acrValues;
+    this.loginReturnUri = loginReturnUri;
   };
   Object.defineProperty(AuthorizationRequest, "RESPONSE_TYPE_CODE", {
     enumerable: true,
@@ -1473,22 +1490,22 @@
       }
     }, {
       key: "makeAuthorizationRequest",
-      value: function makeAuthorizationRequest() {
+      value: function makeAuthorizationRequest(loginReturnUrl) {
         if (!this.openIDConfiguration) {
           throw new Error('Please fetch OpenID configuration first');
         }
 
-        var authorizationRequest = new AuthorizationRequest(this.clientId, this.redirectUri, this.scope, AuthorizationRequest.RESPONSE_TYPE_CODE, this.acrValues);
+        var authorizationRequest = new AuthorizationRequest(this.clientId, this.redirectUri, this.scope, AuthorizationRequest.RESPONSE_TYPE_CODE, this.acrValues, loginReturnUrl);
         this.authorizationRequestHandler.performAuthorizationRequest(this.openIDConfiguration, authorizationRequest);
       }
     }, {
       key: "makeImplicitAuthorizationRequest",
-      value: function makeImplicitAuthorizationRequest() {
+      value: function makeImplicitAuthorizationRequest(loginReturnUrl) {
         if (!this.openIDConfiguration) {
           throw new Error('Please fetch OpenID configuration first');
         }
 
-        var authorizationRequest = new AuthorizationRequest(this.clientId, this.redirectUri, this.scope, AuthorizationRequest.RESPONSE_TYPE_TOKEN, this.acrValues);
+        var authorizationRequest = new AuthorizationRequest(this.clientId, this.redirectUri, this.scope, AuthorizationRequest.RESPONSE_TYPE_TOKEN, this.acrValues, loginReturnUrl);
         this.authorizationRequestHandler.performAuthorizationRequest(this.openIDConfiguration, authorizationRequest);
       }
     }, {
@@ -1604,6 +1621,14 @@
           idToken: Store.getItem('id_token'),
           nonce: Store.getItem('nonce'),
           state: Store.getItem('state')
+        };
+      }
+    }, {
+      key: "getGrabUrls",
+      value: function getGrabUrls() {
+        return {
+          STAGING: 'https://api.stg-myteksi.com/grabid/v1/oauth2',
+          PRODUCTION: 'https://api.grab.com/grabid/v1/oauth2'
         };
       }
     }]);

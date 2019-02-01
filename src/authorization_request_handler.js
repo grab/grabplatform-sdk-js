@@ -17,7 +17,11 @@ const codeChallengeMethod = 'S256'
 
 export class AuthorizationRequestHandler {
   performAuthorizationRequest (configuration, request) {
-    Store.setItem('login_return_uri', window.location.href)
+    let loginReturnUri = window.location.href;
+    if(request.loginReturnUri !== undefined) {
+      loginReturnUri = request.loginReturnUri;
+    }
+    Store.setItem('login_return_uri', loginReturnUri)
     Store.setItem('nonce', nonce)
     Store.setItem('state', state)
     Store.setItem('code_verifier', codeVerifier)
@@ -43,6 +47,15 @@ export class AuthorizationRequestHandler {
   }
 }
 
+/*
+Defines parameters needed to make an authorization request
+clientId: The Grab Client ID issued to the app developer by Grab.
+redirectUri: The uri that the browser should redirect to after completing authorization. This must be one of the uris registered with Grab and is associated with your Client ID.
+scope: A comma separated list of scopes for which your application is requesting permission.
+responseType: The type of authorization expected in the response. Can be either a token or an access code
+acrValues: Authentication Context Class Reference Values. This provides the context for your request, and the appropriate values will vary based on your use case.
+loginReturnUri: Optional parameter - if provided, will store the provided value in local storage as the login return URI. If absent, window.location.href will be stored as the login return uri
+*/
 export class AuthorizationRequest {
   static RESPONSE_TYPE_CODE = 'code'
   static RESPONSE_TYPE_TOKEN = 'token'
@@ -52,12 +65,14 @@ export class AuthorizationRequest {
     redirectUri,
     scope,
     responseType,
-    acrValues
+    acrValues,
+    loginReturnUri
   ) {
     this.clientId = clientId
     this.redirectUri = redirectUri
     this.scope = scope
     this.responseType = responseType
     this.acrValues = acrValues
+    this.loginReturnUri = loginReturnUri
   }
 }
