@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>GrabID Redirect</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+  <div id="errorMsg" />
+  <h3>
+    For more information on why this redirect page exists, please look:
+    <a href="https://tools.ietf.org/html/rfc6749#section-3.1.2.5">here</a>.
+  </h3>
+  <script type="text/javascript"  src="https://unpkg.com/@grab-id/grab-id-client/dist/bundle.js"></script>
+  <script type="text/javascript">
+    GrabID.handleAuthorizationCodeFlowResponse();
+    let returnUri = GrabID.getLoginReturnURI();
+    window.location.assign(returnUri);
+  </script>
+</body>
+</html>

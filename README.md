@@ -14,6 +14,11 @@ Public release
 
 `https://unpkg.com/@grab-id/grab-id-client/dist/bundle.js`
 
+## Live Example
+
+[A mock trips app utilizing the Grab API](https://d3jzjbsmy9pkbd.cloudfront.net/)
+You can find the source for this application [here](./trips-example)
+
 ## Getting Started - Instantiating the Grab ID Client
 
 ```javascript
