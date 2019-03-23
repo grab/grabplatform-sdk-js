@@ -1,6 +1,6 @@
 {
   "name": "@grab-id/grab-id-client",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "JavaScript client SDK for GrabID",
   "main": "dist/bundle.js",
   "scripts": {

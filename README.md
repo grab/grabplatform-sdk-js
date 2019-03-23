@@ -58,9 +58,11 @@ grabIdClient.getOpenIdConfiguration()
 ```
 makeAuthorizationRequest
 Required Parameters: None
-Optional Parameters: loginReturnUri
+Optional Parameters: loginReturnUri, id_token_hint
 
 loginReturnUri: After the Grab authorization endpoint successfully authenticates the request, this value can be fetched on your redirect page via GrabID.getLoginReturnURI. If not provided, loginReturnUri defaults to the page the login request originated from.
+
+id_token_hint: If you already have an ID token, you can pass it in here so that the user is not prompted for credentials again. You may have an ID token if the user has logged in previously or if one was provided to you by Grab when the user is redirected to your site from within the Grab app.
 
 #### Step 2 - Receive and process results of Authorization Request
 
