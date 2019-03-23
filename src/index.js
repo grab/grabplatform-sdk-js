@@ -31,7 +31,7 @@ export default class App {
       .catch(error => console.error('fail to get open id config', error))
   }
 
-  makeAuthorizationRequest (loginReturnUrl) {
+  makeAuthorizationRequest (loginReturnUrl, id_token_hint) {
     if (!this.openIDConfiguration) {
       throw new Error('Please fetch OpenID configuration first')
     }
@@ -42,7 +42,8 @@ export default class App {
       this.scope,
       AuthorizationRequest.RESPONSE_TYPE_CODE,
       this.acrValues,
-      loginReturnUrl
+      loginReturnUrl,
+      id_token_hint
     )
     this.authorizationRequestHandler.performAuthorizationRequest(this.openIDConfiguration, authorizationRequest)
   }
