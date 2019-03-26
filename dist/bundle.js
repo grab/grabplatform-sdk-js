@@ -1324,7 +1324,8 @@
           state: state,
           code_challenge_method: codeChallengeMethod,
           code_challenge: codeChallenge,
-          acr_values: request.acrValues
+          acr_values: request.acrValues,
+          id_token_hint: request.id_token_hint
         };
         var baseUrl = configuration.authorizationEndpoint;
         var params = Object.entries(requestMap).map(function (_ref) {
@@ -1351,7 +1352,7 @@
   loginReturnUri: Optional parameter - if provided, will store the provided value in local storage as the login return URI. If absent, window.location.href will be stored as the login return uri
   */
 
-  var AuthorizationRequest = function AuthorizationRequest(clientId, redirectUri, scope, responseType, acrValues, loginReturnUri) {
+  var AuthorizationRequest = function AuthorizationRequest(clientId, redirectUri, scope, responseType, acrValues, loginReturnUri, id_token_hint) {
     _classCallCheck(this, AuthorizationRequest);
 
     this.clientId = clientId;
@@ -1360,6 +1361,7 @@
     this.responseType = responseType;
     this.acrValues = acrValues;
     this.loginReturnUri = loginReturnUri;
+    this.id_token_hint = id_token_hint;
   };
   Object.defineProperty(AuthorizationRequest, "RESPONSE_TYPE_CODE", {
     enumerable: true,
@@ -1490,12 +1492,12 @@
       }
     }, {
       key: "makeAuthorizationRequest",
-      value: function makeAuthorizationRequest(loginReturnUrl) {
+      value: function makeAuthorizationRequest(loginReturnUrl, id_token_hint) {
         if (!this.openIDConfiguration) {
           throw new Error('Please fetch OpenID configuration first');
         }
 
-        var authorizationRequest = new AuthorizationRequest(this.clientId, this.redirectUri, this.scope, AuthorizationRequest.RESPONSE_TYPE_CODE, this.acrValues, loginReturnUrl);
+        var authorizationRequest = new AuthorizationRequest(this.clientId, this.redirectUri, this.scope, AuthorizationRequest.RESPONSE_TYPE_CODE, this.acrValues, loginReturnUrl, id_token_hint);
         this.authorizationRequestHandler.performAuthorizationRequest(this.openIDConfiguration, authorizationRequest);
       }
     }, {
