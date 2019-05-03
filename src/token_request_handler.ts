@@ -1,3 +1,5 @@
+import { OpenIDConfiguration } from "./open_id_configuration";
+
 /**
  * Copyright (c) Grab Taxi Holdings PTE LTD (GRAB)
  *
@@ -7,7 +9,7 @@
  */
 
 export class TokenRequestHandler {
-  performTokenRequest (configuration, request) {
+  async performTokenRequest (configuration: OpenIDConfiguration, request: TokenRequest): Promise<any> {
     let options = {
       method: 'POST',
       headers: {
@@ -16,21 +18,31 @@ export class TokenRequestHandler {
       body: JSON.stringify(request)
     }
 
-    return fetch(configuration.tokenEndpoint, options)
-      .then(response => response.json())
-      .catch(error => console.error('failed to POST token request', error))
+    try {
+      const response = await fetch(configuration.tokenEndpoint, options);
+      return await response.json();
+    }
+    catch (error) {
+      console.error('failed to POST token request', error);
+    }
   }
 }
 
 export class TokenRequest {
     static GRANT_TYPE_AUTHORIZATION_CODE = 'authorization_code';
 
+    clientId: string;
+    codeVerifier: string;
+    grantType: string;
+    redirectUri: string;
+    code: string;
+
     constructor (
-      clientId,
-      codeVerifier,
-      grantType,
-      redirectUri,
-      code
+      clientId: string,
+      codeVerifier: string,
+      grantType: string,
+      redirectUri: string,
+      code: string
     ) {
       this.clientId = clientId
       this.codeVerifier = codeVerifier
@@ -51,14 +63,19 @@ export class TokenRequest {
 }
 
 export class TokenResponse {
-  constructor (accessToken, idToken, tokenType, expiresIn) {
+  accessToken: string;
+  idToken: string;
+  tokenType: string;
+  expiresIn: string;
+
+  constructor (accessToken: string, idToken: string, tokenType: string, expiresIn: string) {
     this.accessToken = accessToken
     this.idToken = idToken
     this.tokenType = tokenType
     this.expiresIn = expiresIn
   }
 
-  static fromJSON (responseJSON) {
+  static fromJSON (responseJSON: Object) {
     return new TokenResponse(
       responseJSON['access_token'],
       responseJSON['id_token'],

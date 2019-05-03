@@ -8,6 +8,7 @@
 
 import { generateCodeChallenge, generateCodeVerifier, generateRandomString } from './utils'
 import Store from './store'
+import { OpenIDConfiguration } from './open_id_configuration';
 
 const nonce = generateRandomString(16)
 const state = generateRandomString(7)
@@ -16,10 +17,10 @@ const codeChallenge = generateCodeChallenge(codeVerifier)
 const codeChallengeMethod = 'S256'
 
 export class AuthorizationRequestHandler {
-  performAuthorizationRequest (configuration, request) {
-    let loginReturnUri = window.location.href;
-    if(request.loginReturnUri !== undefined) {
-      loginReturnUri = request.loginReturnUri;
+  performAuthorizationRequest (configuration: OpenIDConfiguration, request: AuthorizationRequest): void {
+    let loginReturnUri = window.location.href
+    if (request.loginReturnUri !== undefined) {
+      loginReturnUri = request.loginReturnUri
     }
     Store.setItem('login_return_uri', loginReturnUri)
     Store.setItem('nonce', nonce)
@@ -40,7 +41,7 @@ export class AuthorizationRequestHandler {
     }
 
     let baseUrl = configuration.authorizationEndpoint
-    let params = Object.entries(requestMap).map(([key, val]) => `${key}=${val}`).join('&')
+    let params = Object.keys(requestMap).map(key => `${key}=${requestMap[key]}`).join('&')
 
     let url = `${baseUrl}?${params}`
 
@@ -61,14 +62,22 @@ export class AuthorizationRequest {
   static RESPONSE_TYPE_CODE = 'code'
   static RESPONSE_TYPE_TOKEN = 'token'
 
+  clientId: string;
+  redirectUri: string;
+  scope: string;
+  responseType: string;
+  acrValues: string;
+  loginReturnUri: string;
+  id_token_hint: string;
+
   constructor (
-    clientId,
-    redirectUri,
-    scope,
-    responseType,
-    acrValues,
-    loginReturnUri,
-    id_token_hint
+    clientId: string,
+    redirectUri: string,
+    scope: string,
+    responseType: string,
+    acrValues: string,
+    loginReturnUri: string,
+    id_token_hint?: string
   ) {
     this.clientId = clientId
     this.redirectUri = redirectUri

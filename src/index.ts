@@ -11,29 +11,81 @@ import { AuthorizationRequest, AuthorizationRequestHandler } from './authorizati
 import { TokenRequest, TokenRequestHandler, TokenResponse } from './token_request_handler'
 import { getParams, htmlEncode } from './utils'
 import Store from './store'
+import { GrabConfig, AcrValues } from './grabConfig';
+import { AuthenticationData } from './authenticationData';
 
 export default class App {
-  constructor (openIdUrl, appConfig) {
+  openIdUrl: string;
+  clientId: string;
+  redirectUri: string;
+  scope: string;
+  acrValues: string;
+
+  authorizationRequestHandler: AuthorizationRequestHandler;
+  tokenRequestHandler: TokenRequestHandler;
+  openIDConfiguration: OpenIDConfiguration;
+
+  static GrabUrls = {
+    STAGING: 'https://api.stg-myteksi.com/grabid/v1/oauth2',
+    PRODUCTION: 'https://api.grab.com/grabid/v1/oauth2',
+  }
+
+  constructor (openIdUrl: string, appConfig: GrabConfig) {
     this.openIdUrl = openIdUrl
     this.clientId = appConfig.clientId
     this.redirectUri = appConfig.redirectUri
     this.scope = appConfig.scope
-    this.acrValues = appConfig.acrValues
+    if (typeof(appConfig.acrValues) === 'string') {
+      this.acrValues = appConfig.acrValues;
+    } else {
+      this.acrValues = this.getAcrValuesString(appConfig.acrValues);
+    }
 
     this.authorizationRequestHandler = new AuthorizationRequestHandler()
     this.tokenRequestHandler = new TokenRequestHandler()
     this.openIDConfiguration = undefined
   }
 
-  getOpenIdConfiguration () {
-    return OpenIDConfiguration.fetchConfig(this.openIdUrl)
-      .then(response => { this.openIDConfiguration = response })
-      .catch(error => console.error('fail to get open id config', error))
+  async getOpenIdConfiguration () : Promise<void> {
+    try {
+      const response = await OpenIDConfiguration.fetchConfig(this.openIdUrl);
+      this.openIDConfiguration = response;
+    }
+    catch (error) {
+      console.error(error);
+      throw new Error("Unable to fetch OpenID Configuration");
+    }
   }
 
-  makeAuthorizationRequest (loginReturnUrl, id_token_hint) {
+  getAcrValuesString (acrValues: AcrValues) : string {
+    let acrValuesArray: string[] = [];
+    if(acrValues.service) {
+      acrValuesArray.push(`service:${acrValues.service}`)
+    }
+    if(acrValues.consentContext) {
+      const contextKeys = Object.keys(acrValues.consentContext);
+      const contextString = contextKeys.map(key => `${key}=${acrValues.consentContext[key]}`)
+        .join(',');
+      acrValuesArray.push(`consent_ctx:${contextString}`);
+    }
+    if(acrValues.additionalValues) {
+      const additionalValuesKeys = Object.keys(acrValues.additionalValues);
+      additionalValuesKeys.map(
+        key => {
+          if(key.includes(':')) {
+            throw new Error('Acr Value keys cannot contain a semicolon');
+          }
+          acrValuesArray.push(`${key}:${acrValues.consentContext[key]}`) 
+        }
+      );
+    }
+    
+    return acrValuesArray.join(' ');
+  }
+
+  async makeAuthorizationRequest (loginReturnUrl: string, id_token_hint: string): Promise<void> {
     if (!this.openIDConfiguration) {
-      throw new Error('Please fetch OpenID configuration first')
+      await this.getOpenIdConfiguration();
     }
 
     let authorizationRequest = new AuthorizationRequest(
@@ -48,9 +100,9 @@ export default class App {
     this.authorizationRequestHandler.performAuthorizationRequest(this.openIDConfiguration, authorizationRequest)
   }
 
-  makeImplicitAuthorizationRequest (loginReturnUrl) {
+  async makeImplicitAuthorizationRequest (loginReturnUrl: string): Promise<void> {
     if (!this.openIDConfiguration) {
-      throw new Error('Please fetch OpenID configuration first')
+      await this.getOpenIdConfiguration();
     }
 
     let authorizationRequest = new AuthorizationRequest(
@@ -64,7 +116,7 @@ export default class App {
     this.authorizationRequestHandler.performAuthorizationRequest(this.openIDConfiguration, authorizationRequest)
   }
 
-  static getLoginReturnURI () {
+  static getLoginReturnURI (): string {
     return Store.getItem('login_return_uri')
   }
 
@@ -123,9 +175,9 @@ export default class App {
     return App.getResult()
   }
 
-  makeTokenRequest () {
+  async makeTokenRequest () {
     if (!this.openIDConfiguration) {
-      throw new Error('Please fetch OpenID configuration first')
+      await this.getOpenIdConfiguration();
     }
 
     let codeVerifier = Store.getItem('code_verifier')
@@ -143,15 +195,14 @@ export default class App {
       code
     )
 
-    return this.tokenRequestHandler.performTokenRequest(this.openIDConfiguration, tokenRequest)
-      .then(response => {
-        let tokenResponse = TokenResponse.fromJSON(response)
-        Store.setItem('access_token', tokenResponse.accessToken)
-        Store.setItem('id_token', tokenResponse.idToken)
-      })
+    const response = await this.tokenRequestHandler.performTokenRequest(this.openIDConfiguration, tokenRequest);
+    let tokenResponse = TokenResponse.fromJSON(response);
+    Store.setItem('access_token', tokenResponse.accessToken);
+    Store.setItem('id_token', tokenResponse.idToken);
   }
 
-  makeTestEndpointRequest () {
+  async makeTestEndpointRequest () {
+    console.log("This function will be deprecated as of next release.");
     let accessToken = Store.getItem('access_token')
     let uri = 'https://api.stg-myteksi.com/grabid/v1/oauth2/test_res'
     let options = {
@@ -162,12 +213,16 @@ export default class App {
       }
     }
 
-    return fetch(uri, options)
-      .then(response => response.json())
-      .catch(error => console.error('failed to make test request', error))
+    try {
+      const response = await fetch(uri, options);
+      return await response.json();
+    }
+    catch (error) {
+      console.error('failed to make test request', error);
+    }
   }
 
-  static getResult () {
+  static getResult (): AuthenticationData {
     return {
       accessToken: Store.getItem('access_token'),
       codeVerifier: Store.getItem('code_verifier'),
@@ -178,9 +233,6 @@ export default class App {
   }
 
   static getGrabUrls () {
-    return {
-      STAGING: 'https://api.stg-myteksi.com/grabid/v1/oauth2',
-      PRODUCTION: 'https://api.grab.com/grabid/v1/oauth2',
-    }
+    return App.GrabUrls;
   }
 }

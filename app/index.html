@@ -32,13 +32,18 @@
 
 <script type="text/javascript" src="../dist/bundle.js"></script>
 <script type="text/javascript">
-    const openIdUrl = GrabID.getGrabUrls().PRODUCTION
+    const openIdUrl = GrabID.GrabUrls.PRODUCTION
 
     let appConfig = {
       clientId: '08044981144746ec80a870c605fe705b',
       redirectUri: 'https://public.grab.com/app/redirect.html',
       scope: ['openid', 'gid_test_scope_1', 'gid_test_scope_2', 'gid_test_scope_3'].join(' '),
-      acrValues: ['service:PASSENGER', 'consent_ctx:country=sg'].join(' '),
+      acrValues: {
+        service: 'PASSENGER',
+        consentContext: {
+          countryCode: 'SG'
+        }
+      },
     }
 
     $(function () {
@@ -46,37 +51,36 @@
 
       // authorize request handler
       $('#makeAuthorizationRequest').on('click', function () {
-        application.getOpenIdConfiguration()
-          .then(() => {
-            application.makeAuthorizationRequest()
-          })
-          .catch(error => alert(error.toString()))
+        application.makeAuthorizationRequest()
       })
 
       // token request handler
       $('#makeTokenRequest').on('click', function () {
-        application.getOpenIdConfiguration()
-          .then(() => {
-            application.makeTokenRequest()
-              .then(() => {prettyPrint(GrabID.getResult())})
-              .catch(error => alert(error.toString()))
-          })
+        application.makeTokenRequest()
+          .then(() => {prettyPrint(GrabID.getResult())})
           .catch(error => alert(error.toString()))
       })
 
       // implicit authorization request handler
       $('#makeImplicitAuthorizationRequest').on('click', function () {
-        application.getOpenIdConfiguration()
-          .then(() => {
-            application.makeImplicitAuthorizationRequest()
-          })
-          .catch(error => alert(error.toString()))
+        application.makeImplicitAuthorizationRequest()
       })
 
       // test endpoint request handler
       $('#makeTestEndpointRequest').on('click', function () {
-        application.makeTestEndpointRequest().then(responseJSON => {
-          prettyPrint(responseJSON)
+        let tokenResult = GrabID.getResult();
+        window.fetch("https://grab.api.com/grabid/v1/oauth2/userinfo", {
+          method: 'GET',
+          headers: {
+            'Accept-Content': 'application/json; charset=utf-8',
+            Authorization: "Bearer " + tokenResult.accessToken,
+          },
+          mode: 'cors',
+        })
+        .then((response) => { 
+          response.json().then((userInfo) => {
+            console.log(userInfo);
+          });
         })
       })
 
