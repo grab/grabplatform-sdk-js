@@ -1,6 +1,6 @@
 {
   "name": "@grab-id/grab-id-client",
-  "version": "1.0.11",
+  "version": "1.1.0",
   "description": "JavaScript client SDK for GrabID",
   "main": "dist/bundle.js",
   "scripts": {
@@ -14,7 +14,8 @@
     "type": "git",
     "url": "git@github.com:grab/grabplatform-sdk-js.git"
   },
-  "author": "Michael Zhao",
+  "author": "Elliott Miller",
+  "contributors": [ "Michael Zhao" ],
   "license": "MIT",
   "dependencies": {
     "crypto-js": "^3.1.9-1"
@@ -22,7 +23,7 @@
   "devDependencies": {
     "@babel/core": "^7.1.0",
     "@babel/preset-env": "^7.1.0",
-    "babel-cli": "^6.26.0",
+    "@types/crypto-js": "^3.1.43",
     "babel-eslint": "^10.0.1",
     "babel-loader": "^8.0.2",
     "babel-plugin-transform-class-properties": "^6.24.1",
@@ -33,10 +34,14 @@
     "eslint-plugin-promise": "^4.0.1",
     "eslint-plugin-standard": "^4.0.0",
     "http-server": "^0.11.1",
+    "jest": "^24.7.1",
     "rollup": "^0.66.4",
     "rollup-plugin-babel": "^4.0.3",
     "rollup-plugin-commonjs": "^9.1.8",
-    "rollup-plugin-node-resolve": "^3.4.0"
+    "rollup-plugin-node-resolve": "^3.4.0",
+    "rollup-plugin-typescript": "^1.0.1",
+    "tslib": "^1.9.3",
+    "typescript": "^3.4.5"
   },
   "files": [
     "dist"

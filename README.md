@@ -17,27 +17,46 @@ Public release
 ## Getting Started - Instantiating the Grab ID Client
 
 ```javascript
-const openIdUrl = GrabID.getGrabUrls().PRODUCTION;
+const openIdUrl = GrabID.GrabUrls.PRODUCTION;
 
 let appConfig = {
   clientId: '08044981144746ec80a870c605fe705b',
   redirectUri: 'https://public.grab.com/app/redirect.html',
   scope: ['openid', 'gid_test_scope_1', 'gid_test_scope_2', 'gid_test_scope_3'].join(' '),
-  acrValues: ['service:PASSENGER', 'consent_ctx:country=sg'].join(' '),
+  acrValues: {
+    service: 'PASSENGER',
+    consentContext: {
+      countryCode: 'SG'
+    }
+  },
 }
 
 let grabIdClient = new GrabID(openIdUrl, appConfig)
 ```
 Required Parameters: openIdUrl, appConfig
 
-openIdUrl: The URL used to fetch authorization configuration. Most of the time, you will use either STAGING or PRODUCTION from the getGrabUrls function.
+openIdUrl: The URL used to fetch authorization configuration. Most of the time, you will use either STAGING or PRODUCTION from the GrabUrls constants imported with GrabID.
 
 appConfig: Defines parameters needed to make an authorization request
 
 - clientId: The Grab Client ID issued to the app developer by Grab.
 - redirectUri: The uri that the browser should redirect to after completing authorization. This must be one of the uris registered with Grab and is associated with your Client ID.
 - scope: A comma separated list of scopes for which your application is requesting permission.
-- acrValues: Authentication Context Class Reference Values. This provides the context for your request, and the appropriate values will vary based on your use case.
+- acrValues: Authentication Context Class Reference Values. This provides the context for your request, and the appropriate values will vary based on your use case. Can be either a space separated string of values or an AcrValues object:
+
+```javascript
+interface AcrValues {
+  service?: string,
+  consentContext?: {
+    countryCode?: string,
+    currency?: string,
+    [x: string]: string,
+  },
+  additionalValues?: {
+    [x: string]: string
+  }
+}
+```
 
 ## Authentication Flows
 
@@ -50,11 +69,7 @@ Full example please refer [here](./app/index.html)
 This code should be triggered when the user wants to log in using their grab credentials. Note that you are not collecting any information from the user - Grab will take care of authorizing the user and consent to any permissions you specify.
 
 ```javascript
-grabIdClient.getOpenIdConfiguration()
-  .then(() => {
-    grabIdClient.makeAuthorizationRequest()
-  })
-  .catch(error => alert(error.toString()))
+grabIdClient.makeAuthorizationRequest()
 ```
 makeAuthorizationRequest
 Required Parameters: None
@@ -89,12 +104,8 @@ Now that the user has been authorized, you can fetch an access token and use it 
 Make Token Request
 
 ```javascript
-grabIdClient.getOpenIdConfiguration()
-  .then(() => {
-    grabIdClient.makeTokenRequest()
-      .then(() => {prettyPrint(GrabID.getResult())})
-      .catch(error => alert(error.toString()))
-  })
+grabIdClient.makeTokenRequest()
+  .then(() => {prettyPrint(GrabID.getResult())})
   .catch(error => alert(error.toString()))
 ```
 makeTokenRequest - This will make a request to the Grab ID endpoint to retrieve an access token that you can use to make authorized requests. Note that this call doesn't return anything you can act on directly. To actually get your token, you'll need to call:
@@ -112,28 +123,25 @@ The only one you'll need to make a request is the accessToken.
 Example of accessing an authorized endpoint (in this case the Grab ID endpoint to get user information):
 
 ```javascript
-this.grabClient.getOpenIdConfiguration()
+this.grabClient.makeTokenRequest()
   .then(() => {
-    this.grabClient.makeTokenRequest()
-      .then(() => {
-        let tokenResult = GrabID.getResult();
-        window.fetch("https://grab.api.com/grabid/v1/oauth2/userinfo", {
-          method: 'GET',
-          headers: {
-            'Accept-Content': 'application/json; charset=utf-8',
-            Authorization: "Bearer " + tokenResult.accessToken,
-          },
-          mode: 'cors',
-        })
-        .then((response) => { 
-          response.json().then((userInfo) => {
-            this.setState({
-              userName: userInfo.name,
-              userEmail: userInfo.email,
-            });
-          });
-        })
-      })
+    let tokenResult = GrabID.getResult();
+    window.fetch("https://grab.api.com/grabid/v1/oauth2/userinfo", {
+      method: 'GET',
+      headers: {
+        'Accept-Content': 'application/json; charset=utf-8',
+        Authorization: "Bearer " + tokenResult.accessToken,
+      },
+      mode: 'cors',
+    })
+    .then((response) => { 
+      response.json().then((userInfo) => {
+        this.setState({
+          userName: userInfo.name,
+          userEmail: userInfo.email,
+        });
+      });
+    })
   })
 ```
 
@@ -144,11 +152,7 @@ this.grabClient.getOpenIdConfiguration()
 This code should be triggered when the user wants to log in using their grab credentials. Note that you are not collecting any information from the user - Grab will take care of authorizing the user and consent to any permissions you specify.
 
 ```javascript
-grabIdClient.getOpenIdConfiguration()
-  .then(() => {
-    grabIdClient.makeImplicitAuthorizationRequest()
-  })
-  .catch(error => alert(error.toString()))
+grabIdClient.makeImplicitAuthorizationRequest()
 ```
 makeImplicitAuthorizationRequest
 Required Parameters: None
@@ -180,22 +184,22 @@ In the implicit flow, there's a little less work needed to make calls to an endp
 
 ```javascript
 let tokenResult = GrabID.getResult();
-  window.fetch("https://grab.api.com/grabid/v1/oauth2/userinfo", {
-    method: 'GET',
-    headers: {
-      'Accept-Content': 'application/json; charset=utf-8',
-      Authorization: "Bearer " + tokenResult.accessToken,
-    },
-    mode: 'cors',
-  })
-  .then((response) => { 
-    response.json().then((userInfo) => {
-      this.setState({
-        userName: userInfo.name,
-        userEmail: userInfo.email,
-      });
+window.fetch("https://grab.api.com/grabid/v1/oauth2/userinfo", {
+  method: 'GET',
+  headers: {
+    'Accept-Content': 'application/json; charset=utf-8',
+    Authorization: "Bearer " + tokenResult.accessToken,
+  },
+  mode: 'cors',
+})
+.then((response) => { 
+  response.json().then((userInfo) => {
+    this.setState({
+      userName: userInfo.name,
+      userEmail: userInfo.email,
     });
-  })
+  });
+})
 ```
 
 Note that this is very similar to the auhorization flow, but we did not have to make an additional call to get a token. That's because the implicit flow directly returns a token that you can use to make requests instead of an access code that you exchange for a token.

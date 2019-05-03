@@ -7,17 +7,21 @@
  */
 
 export class OpenIDConfiguration {
+  authorizationEndpoint: string;
+  tokenEndpoint: string;
+  idTokenVerificationEndpoint: string;
+
   constructor (
-    authorizationEndpoint,
-    tokenEndpoint,
-    idTokenVerificationEndpoint
+    authorizationEndpoint: string,
+    tokenEndpoint: string,
+    idTokenVerificationEndpoint: string
   ) {
     this.authorizationEndpoint = authorizationEndpoint
     this.tokenEndpoint = tokenEndpoint
     this.idTokenVerificationEndpoint = idTokenVerificationEndpoint
   }
 
-  static fromJSON (responseJSON) {
+  static fromJSON (responseJSON: Object) : OpenIDConfiguration {
     return new OpenIDConfiguration(
       responseJSON['authorization_endpoint'],
       responseJSON['token_endpoint'],
@@ -25,18 +29,17 @@ export class OpenIDConfiguration {
     )
   }
 
-  static fetchConfig (openIdUrl) {
-    let uri = `${openIdUrl}/.well-known/openid-configuration`
-    let options = {
+  static async fetchConfig (openIdUrl) : Promise<OpenIDConfiguration> {
+    const uri = `${openIdUrl}/.well-known/openid-configuration`
+    const options : RequestInit = {
       method: 'GET',
       mode: 'cors',
       headers: {
         'Content-Type': 'application/json; charset=utf-8'
       }
     }
-    return fetch(uri, options)
-      .then(response => response.json())
-      .then(config => OpenIDConfiguration.fromJSON(config))
-      .catch(error => console.error('failed to fetch openid configuration from issuer', error))
+    const response = await fetch(uri, options);
+    const config = await response.json();
+    return OpenIDConfiguration.fromJSON(config);
   }
 }

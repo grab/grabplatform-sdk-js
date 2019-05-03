@@ -9,19 +9,19 @@
 const namespace = 'grabid'
 
 export default class Store {
-  static getKey (key) {
+  static getKey (key: string): string {
     return `${namespace}:${key}`
   }
 
-  static getItem (key) {
+  static getItem (key:string): any {
     return window.localStorage.getItem(this.getKey(key))
   }
 
-  static setItem (key, value) {
+  static setItem (key: string, value: any) {
     window.localStorage.setItem(this.getKey(key), value)
   }
 
-  static removeItem (key) {
+  static removeItem (key: string) {
     window.localStorage.removeItem(this.getKey(key))
   }
 
