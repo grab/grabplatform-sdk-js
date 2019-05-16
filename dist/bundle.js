@@ -1444,6 +1444,9 @@
         };
         App.prototype.getAcrValuesString = function (acrValues) {
             var acrValuesArray = [];
+            if (!acrValues) {
+                return '';
+            }
             if (acrValues.service) {
                 acrValuesArray.push("service:" + acrValues.service);
             }
@@ -1459,7 +1462,7 @@
                     if (key.includes(':')) {
                         throw new Error('Acr Value keys cannot contain a semicolon');
                     }
-                    acrValuesArray.push(key + ":" + acrValues.consentContext[key]);
+                    acrValuesArray.push(key + ":" + acrValues.additionalValues[key]);
                 });
             }
             return acrValuesArray.join(' ');
@@ -1635,6 +1638,10 @@
         App.GrabUrls = {
             STAGING: 'https://api.stg-myteksi.com/grabid/v1/oauth2',
             PRODUCTION: 'https://api.grab.com/grabid/v1/oauth2',
+        };
+        App.GrabPartnerUrls = {
+            STAGING: 'https://partner-gateway.stg-myteksi.com/grabid/v1/oauth2',
+            PRODUCTION: 'https://partner-gateway.grab.com/grabid/v1/oauth2',
         };
         return App;
     }());
