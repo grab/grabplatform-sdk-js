@@ -30,6 +30,11 @@ export default class App {
     PRODUCTION: 'https://api.grab.com/grabid/v1/oauth2',
   }
 
+  static GrabPartnerUrls = {
+    STAGING: 'https://partner-gateway.stg-myteksi.com/grabid/v1/oauth2',
+    PRODUCTION: 'https://partner-gateway.grab.com/grabid/v1/oauth2',
+  }
+
   constructor (openIdUrl: string, appConfig: GrabConfig) {
     this.openIdUrl = openIdUrl
     this.clientId = appConfig.clientId
@@ -59,6 +64,9 @@ export default class App {
 
   getAcrValuesString (acrValues: AcrValues) : string {
     let acrValuesArray: string[] = [];
+    if (!acrValues) {
+      return '';
+    }
     if(acrValues.service) {
       acrValuesArray.push(`service:${acrValues.service}`)
     }
@@ -75,7 +83,7 @@ export default class App {
           if(key.includes(':')) {
             throw new Error('Acr Value keys cannot contain a semicolon');
           }
-          acrValuesArray.push(`${key}:${acrValues.consentContext[key]}`) 
+          acrValuesArray.push(`${key}:${acrValues.additionalValues[key]}`) 
         }
       );
     }
