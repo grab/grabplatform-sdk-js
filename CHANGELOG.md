@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1] - 2019-05-16
+### Added
+- Added GrabPartnerUrls to the GrabID object. Most external partners using the SDK will use this instead of GrabUrls going forward.
+
+### Bugfixes
+- Fixed a bug when acrValues are not specified or when additionalValues are specified
+
 ## [1.1.0] - 2019-05-02
 ### Added
 - This changelog (Hello!)
