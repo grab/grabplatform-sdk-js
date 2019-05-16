@@ -17,7 +17,7 @@ Public release
 ## Getting Started - Instantiating the Grab ID Client
 
 ```javascript
-const openIdUrl = GrabID.GrabUrls.PRODUCTION;
+const openIdUrl = GrabID.GrabPartnerUrls.PRODUCTION;
 
 let appConfig = {
   clientId: '08044981144746ec80a870c605fe705b',
@@ -35,7 +35,7 @@ let grabIdClient = new GrabID(openIdUrl, appConfig)
 ```
 Required Parameters: openIdUrl, appConfig
 
-openIdUrl: The URL used to fetch authorization configuration. Most of the time, you will use either STAGING or PRODUCTION from the GrabUrls constants imported with GrabID.
+openIdUrl: The URL used to fetch authorization configuration. Most of the time, you will use either STAGING or PRODUCTION from the GrabPartnerUrls constants imported with GrabID.
 
 appConfig: Defines parameters needed to make an authorization request
 
