@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.1.2] - 2019-05-17
+### Changed
+- Changed the endpoint for partner endpoints from partner-gateway to partner-api. This is purely a cosmetic change, as they are aliases of one another.
+
 ## [1.1.1] - 2019-05-16
 ### Added
 - Added GrabPartnerUrls to the GrabID object. Most external partners using the SDK will use this instead of GrabUrls going forward.

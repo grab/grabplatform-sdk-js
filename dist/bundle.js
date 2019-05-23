@@ -1640,8 +1640,8 @@
             PRODUCTION: 'https://api.grab.com/grabid/v1/oauth2',
         };
         App.GrabPartnerUrls = {
-            STAGING: 'https://partner-gateway.stg-myteksi.com/grabid/v1/oauth2',
-            PRODUCTION: 'https://partner-gateway.grab.com/grabid/v1/oauth2',
+            STAGING: 'https://partner-api.stg-myteksi.com/grabid/v1/oauth2',
+            PRODUCTION: 'https://partner-api.grab.com/grabid/v1/oauth2',
         };
         return App;
     }());
