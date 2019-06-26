@@ -1290,7 +1290,8 @@
                 code_challenge_method: codeChallengeMethod,
                 code_challenge: codeChallenge,
                 acr_values: request.acrValues,
-                id_token_hint: request.id_token_hint
+                id_token_hint: request.id_token_hint,
+                request: request.request,
             };
             var baseUrl = configuration.authorizationEndpoint;
             var params = Object.keys(requestMap).map(function (key) { return key + "=" + requestMap[key]; }).join('&');
@@ -1309,7 +1310,7 @@
     loginReturnUri: Optional parameter - if provided, will store the provided value in local storage as the login return URI. If absent, window.location.href will be stored as the login return uri
     */
     var AuthorizationRequest = /** @class */ (function () {
-        function AuthorizationRequest(clientId, redirectUri, scope, responseType, acrValues, loginReturnUri, id_token_hint) {
+        function AuthorizationRequest(clientId, redirectUri, scope, responseType, acrValues, loginReturnUri, id_token_hint, request) {
             this.clientId = clientId;
             this.redirectUri = redirectUri;
             this.scope = scope;
@@ -1317,6 +1318,7 @@
             this.acrValues = acrValues;
             this.loginReturnUri = loginReturnUri;
             this.id_token_hint = id_token_hint;
+            this.request = request;
         }
         AuthorizationRequest.RESPONSE_TYPE_CODE = 'code';
         AuthorizationRequest.RESPONSE_TYPE_TOKEN = 'token';
@@ -1411,6 +1413,7 @@
             this.clientId = appConfig.clientId;
             this.redirectUri = appConfig.redirectUri;
             this.scope = appConfig.scope;
+            this.request = appConfig.request;
             if (typeof (appConfig.acrValues) === 'string') {
                 this.acrValues = appConfig.acrValues;
             }
@@ -1479,14 +1482,14 @@
                             _a.sent();
                             _a.label = 2;
                         case 2:
-                            authorizationRequest = new AuthorizationRequest(this.clientId, this.redirectUri, this.scope, AuthorizationRequest.RESPONSE_TYPE_CODE, this.acrValues, loginReturnUrl, id_token_hint);
+                            authorizationRequest = new AuthorizationRequest(this.clientId, this.redirectUri, this.scope, AuthorizationRequest.RESPONSE_TYPE_CODE, this.acrValues, loginReturnUrl, id_token_hint, this.request);
                             this.authorizationRequestHandler.performAuthorizationRequest(this.openIDConfiguration, authorizationRequest);
                             return [2 /*return*/];
                     }
                 });
             });
         };
-        App.prototype.makeImplicitAuthorizationRequest = function (loginReturnUrl) {
+        App.prototype.makeImplicitAuthorizationRequest = function (loginReturnUrl, id_token_hint) {
             return __awaiter(this, void 0, Promise, function () {
                 var authorizationRequest;
                 return __generator(this, function (_a) {
@@ -1498,7 +1501,7 @@
                             _a.sent();
                             _a.label = 2;
                         case 2:
-                            authorizationRequest = new AuthorizationRequest(this.clientId, this.redirectUri, this.scope, AuthorizationRequest.RESPONSE_TYPE_TOKEN, this.acrValues, loginReturnUrl);
+                            authorizationRequest = new AuthorizationRequest(this.clientId, this.redirectUri, this.scope, AuthorizationRequest.RESPONSE_TYPE_TOKEN, this.acrValues, loginReturnUrl, id_token_hint, this.request);
                             this.authorizationRequestHandler.performAuthorizationRequest(this.openIDConfiguration, authorizationRequest);
                             return [2 /*return*/];
                     }

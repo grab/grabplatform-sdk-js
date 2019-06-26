@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.1.3] - 2019-06-26
+### Added
+- You can now pass a request string along with your authorization or implicit authorization request
+- You can now pass an id_token_hint with your implicit authorization request
+
 ## [1.1.2] - 2019-05-17
 ### Changed
 - Changed the endpoint for partner endpoints from partner-gateway to partner-api. This is purely a cosmetic change, as they are aliases of one another.
