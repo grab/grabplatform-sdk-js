@@ -37,7 +37,8 @@ export class AuthorizationRequestHandler {
       code_challenge_method: codeChallengeMethod,
       code_challenge: codeChallenge,
       acr_values: request.acrValues,
-      id_token_hint: request.id_token_hint
+      id_token_hint: request.id_token_hint,
+      request: request.request,
     }
 
     let baseUrl = configuration.authorizationEndpoint
@@ -69,6 +70,7 @@ export class AuthorizationRequest {
   acrValues: string;
   loginReturnUri: string;
   id_token_hint: string;
+  request: string;
 
   constructor (
     clientId: string,
@@ -77,7 +79,8 @@ export class AuthorizationRequest {
     responseType: string,
     acrValues: string,
     loginReturnUri: string,
-    id_token_hint?: string
+    id_token_hint?: string,
+    request?: string
   ) {
     this.clientId = clientId
     this.redirectUri = redirectUri
@@ -86,5 +89,6 @@ export class AuthorizationRequest {
     this.acrValues = acrValues
     this.loginReturnUri = loginReturnUri
     this.id_token_hint = id_token_hint
+    this.request = request
   }
 }

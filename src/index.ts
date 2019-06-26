@@ -20,6 +20,7 @@ export default class App {
   redirectUri: string;
   scope: string;
   acrValues: string;
+  request: string;
 
   authorizationRequestHandler: AuthorizationRequestHandler;
   tokenRequestHandler: TokenRequestHandler;
@@ -40,6 +41,7 @@ export default class App {
     this.clientId = appConfig.clientId
     this.redirectUri = appConfig.redirectUri
     this.scope = appConfig.scope
+    this.request = appConfig.request
     if (typeof(appConfig.acrValues) === 'string') {
       this.acrValues = appConfig.acrValues;
     } else {
@@ -103,12 +105,13 @@ export default class App {
       AuthorizationRequest.RESPONSE_TYPE_CODE,
       this.acrValues,
       loginReturnUrl,
-      id_token_hint
+      id_token_hint,
+      this.request,
     )
     this.authorizationRequestHandler.performAuthorizationRequest(this.openIDConfiguration, authorizationRequest)
   }
 
-  async makeImplicitAuthorizationRequest (loginReturnUrl: string): Promise<void> {
+  async makeImplicitAuthorizationRequest (loginReturnUrl: string, id_token_hint: string): Promise<void> {
     if (!this.openIDConfiguration) {
       await this.getOpenIdConfiguration();
     }
@@ -119,7 +122,9 @@ export default class App {
       this.scope,
       AuthorizationRequest.RESPONSE_TYPE_TOKEN,
       this.acrValues,
-      loginReturnUrl
+      loginReturnUrl,
+      id_token_hint,
+      this.request,
     )
     this.authorizationRequestHandler.performAuthorizationRequest(this.openIDConfiguration, authorizationRequest)
   }

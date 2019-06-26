@@ -3,6 +3,7 @@ export interface GrabConfig {
   redirectUri: string;
   scope: string;
   acrValues?: string | AcrValues;
+  request?: string;
 }
 
 export interface AcrValues {

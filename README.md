@@ -42,6 +42,7 @@ appConfig: Defines parameters needed to make an authorization request
 - clientId: The Grab Client ID issued to the app developer by Grab.
 - redirectUri: The uri that the browser should redirect to after completing authorization. This must be one of the uris registered with Grab and is associated with your Client ID.
 - scope: A comma separated list of scopes for which your application is requesting permission.
+- request: A string that can be passed in to provide additional claims for your request. For the purposes of this SDK, it is an opaque string, but you are responsible for constructing your claims appropriately and stringifying it. For a full explanation of the request parameter, you can refer to the [official RFC](https://openid.net/specs/openid-connect-core-1_0.html#RequestObject). For many users who are implementing GrabPay flows, this parameter will take in the JWT that you get back from GrabPay APIs. Documentation for those APIs can be found here: [One Time Payment](https://developer.grab.com/assets/docs/grab-pay/GrabPay_One_time_Payments_Integration_Guide.pdf) and [Tokenised Payments Integration Guide](https://developer.grab.com/assets/docs/grab-pay/GrabPay_Tokenised_Payments_Integration_Guide.pdf).
 - acrValues: Authentication Context Class Reference Values. This provides the context for your request, and the appropriate values will vary based on your use case. Can be either a space separated string of values or an AcrValues object:
 
 ```javascript
@@ -77,7 +78,7 @@ Optional Parameters: loginReturnUri, id_token_hint
 
 loginReturnUri: After the Grab authorization endpoint successfully authenticates the request, this value can be fetched on your redirect page via GrabID.getLoginReturnURI. If not provided, loginReturnUri defaults to the page the login request originated from.
 
-id_token_hint: If you already have an ID token, you can pass it in here so that the user is not prompted for credentials again. You may have an ID token if the user has logged in previously or if one was provided to you by Grab when the user is redirected to your site from within the Grab app.
+id_token_hint: You can pass in an ID token here if one has been provided to you.
 
 #### Step 2 - Receive and process results of Authorization Request
 
@@ -156,9 +157,11 @@ grabIdClient.makeImplicitAuthorizationRequest()
 ```
 makeImplicitAuthorizationRequest
 Required Parameters: None
-Optional Parameters: loginReturnUri
+Optional Parameters: loginReturnUri, id_token_hint
 
 loginReturnUri: After the Grab authorization endpoint successfully authenticates the request, this value can be fetched on your redirect page via GrabID.getLoginReturnURI. If not provided, loginReturnUri defaults to the page the login request originated from.
+
+id_token_hint: You can pass in an ID token here if one has been provided to you.
 
 #### Step 2 - Receive and process results of authorization request
 
