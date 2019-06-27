@@ -1291,8 +1291,10 @@
                 code_challenge: codeChallenge,
                 acr_values: request.acrValues,
                 id_token_hint: request.id_token_hint,
-                request: request.request,
             };
+            if (request.request) {
+                requestMap.request = request.request;
+            }
             var baseUrl = configuration.authorizationEndpoint;
             var params = Object.keys(requestMap).map(function (key) { return key + "=" + requestMap[key]; }).join('&');
             var url = baseUrl + "?" + params;
