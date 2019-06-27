@@ -27,7 +27,7 @@ export class AuthorizationRequestHandler {
     Store.setItem('state', state)
     Store.setItem('code_verifier', codeVerifier)
 
-    let requestMap = {
+    let requestMap: any = {
       client_id: request.clientId,
       scope: request.scope,
       response_type: request.responseType,
@@ -38,7 +38,10 @@ export class AuthorizationRequestHandler {
       code_challenge: codeChallenge,
       acr_values: request.acrValues,
       id_token_hint: request.id_token_hint,
-      request: request.request,
+    }
+
+    if (request.request) {
+      requestMap.request = request.request;
     }
 
     let baseUrl = configuration.authorizationEndpoint

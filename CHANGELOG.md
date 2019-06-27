@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.1.4] - 2019-06-26
+### Bugfixes
+- Fixing situation where no request param is passed in
+
 ## [1.1.3] - 2019-06-26
 ### Added
 - You can now pass a request string along with your authorization or implicit authorization request
