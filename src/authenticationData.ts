@@ -3,5 +3,6 @@ export interface AuthenticationData {
   codeVerifier: string,
   idToken: string,
   nonce: string,
-  state: string
+  state: string,
+  code: string,
 }

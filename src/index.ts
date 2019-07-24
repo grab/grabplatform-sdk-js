@@ -241,7 +241,8 @@ export default class App {
       codeVerifier: Store.getItem('code_verifier'),
       idToken: Store.getItem('id_token'),
       nonce: Store.getItem('nonce'),
-      state: Store.getItem('state')
+      state: Store.getItem('state'),
+      code: Store.getItem('code'),
     }
   }
 
