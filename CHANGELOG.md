@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.1.5] = 2019-07-24
+### Added
+- Adding code to AuthenticationData returned by getResult
+
 ## [1.1.4] - 2019-06-26
 ### Bugfixes
 - Fixing situation where no request param is passed in
