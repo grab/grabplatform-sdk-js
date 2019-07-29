@@ -19,7 +19,7 @@ const codeChallengeMethod = 'S256'
 export class AuthorizationRequestHandler {
   performAuthorizationRequest (configuration: OpenIDConfiguration, request: AuthorizationRequest): void {
     let loginReturnUri = window.location.href
-    if (request.loginReturnUri !== undefined) {
+    if (request.loginReturnUri) {
       loginReturnUri = request.loginReturnUri
     }
     Store.setItem('login_return_uri', loginReturnUri)
@@ -41,7 +41,11 @@ export class AuthorizationRequestHandler {
     }
 
     if (request.request) {
-      requestMap.request = request.request;
+      requestMap.request = request.request
+    }
+
+    if (request.login_hint) {
+      requestMap.login_hint = request.login_hint
     }
 
     let baseUrl = configuration.authorizationEndpoint
@@ -74,6 +78,7 @@ export class AuthorizationRequest {
   loginReturnUri: string;
   id_token_hint: string;
   request: string;
+  login_hint: string;
 
   constructor (
     clientId: string,
@@ -83,7 +88,8 @@ export class AuthorizationRequest {
     acrValues: string,
     loginReturnUri: string,
     id_token_hint?: string,
-    request?: string
+    request?: string,
+    login_hint?: string
   ) {
     this.clientId = clientId
     this.redirectUri = redirectUri
@@ -93,5 +99,6 @@ export class AuthorizationRequest {
     this.loginReturnUri = loginReturnUri
     this.id_token_hint = id_token_hint
     this.request = request
+    this.login_hint = login_hint
   }
 }

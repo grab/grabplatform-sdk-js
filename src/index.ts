@@ -21,6 +21,7 @@ export default class App {
   scope: string;
   acrValues: string;
   request: string;
+  login_hint: string;
 
   authorizationRequestHandler: AuthorizationRequestHandler;
   tokenRequestHandler: TokenRequestHandler;
@@ -42,6 +43,7 @@ export default class App {
     this.redirectUri = appConfig.redirectUri
     this.scope = appConfig.scope
     this.request = appConfig.request
+    this.login_hint = appConfig.login_hint;
     if (typeof(appConfig.acrValues) === 'string') {
       this.acrValues = appConfig.acrValues;
     } else {
@@ -107,6 +109,7 @@ export default class App {
       loginReturnUrl,
       id_token_hint,
       this.request,
+      this.login_hint,
     )
     this.authorizationRequestHandler.performAuthorizationRequest(this.openIDConfiguration, authorizationRequest)
   }
@@ -125,6 +128,7 @@ export default class App {
       loginReturnUrl,
       id_token_hint,
       this.request,
+      this.login_hint,
     )
     this.authorizationRequestHandler.performAuthorizationRequest(this.openIDConfiguration, authorizationRequest)
   }

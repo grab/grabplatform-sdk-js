@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.6] = 2019-07-29
+### Added
+- Adding login_hint as parameter that can be passed in during instantiation to be passed along in the authorization flows
+
+### Fixed
+- You can now pass null for loginReturnUrl on the authorization request functions and it will not override the default login return url. Previously, you had to pass undefined if you wanted to skip that parameter.
+
 ## [1.1.5] = 2019-07-24
 ### Added
 - Adding code to AuthenticationData returned by getResult
