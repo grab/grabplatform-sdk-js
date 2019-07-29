@@ -4,6 +4,7 @@ export interface GrabConfig {
   scope: string;
   acrValues?: string | AcrValues;
   request?: string;
+  login_hint?: string;
 }
 
 export interface AcrValues {
