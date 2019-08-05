@@ -13,6 +13,7 @@ import { getParams, htmlEncode } from './utils'
 import Store from './store'
 import { GrabConfig, AcrValues } from './grabConfig';
 import { AuthenticationData } from './authenticationData';
+import 'whatwg-fetch';
 
 export default class App {
   openIdUrl: string;
