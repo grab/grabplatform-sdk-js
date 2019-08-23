@@ -29,7 +29,7 @@ export class OpenIDConfiguration {
     )
   }
 
-  static async fetchConfig (openIdUrl) : Promise<OpenIDConfiguration> {
+  static async fetchConfig (openIdUrl: string) : Promise<OpenIDConfiguration> {
     const uri = `${openIdUrl}/.well-known/openid-configuration`
     const options : RequestInit = {
       method: 'GET',

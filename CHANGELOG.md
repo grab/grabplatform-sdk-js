@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.8] - 2019-08-22
+### Added
+- Adding tests for main functions handling authorization
+
+### Changed
+- Refactored code to make functions more testable
+- makeTestEndpointRequest has been removed
+
 ## [1.1.7] - 2019-08-05
 ### Fixed
 - Adding fetch polyfill to support older browsers

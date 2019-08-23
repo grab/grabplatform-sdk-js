@@ -1226,6 +1226,15 @@
         anchorNode.appendChild(document.createTextNode(html));
         return anchorNode.innerHTML;
     }
+    function generateError(name, message) {
+        return new Error(JSON.stringify({ name: name, message: message }));
+    }
+    function errorFromParams(params) {
+        return generateError(htmlEncode(params['error']), htmlEncode(params['error_description']));
+    }
+    function codeMismatchError() {
+        return generateError('code mismatch', 'This could be caused by multiple browser windows attempting to authenticate to GrabId at the same time');
+    }
 
     /**
      * Copyright (c) Grab Taxi Holdings PTE LTD (GRAB)
@@ -1271,7 +1280,7 @@
     var AuthorizationRequestHandler = /** @class */ (function () {
         function AuthorizationRequestHandler() {
         }
-        AuthorizationRequestHandler.prototype.performAuthorizationRequest = function (configuration, request) {
+        AuthorizationRequestHandler.performAuthorizationRequest = function (configuration, request) {
             var loginReturnUri = window.location.href;
             if (request.loginReturnUri) {
                 loginReturnUri = request.loginReturnUri;
@@ -1341,7 +1350,7 @@
     var TokenRequestHandler = /** @class */ (function () {
         function TokenRequestHandler() {
         }
-        TokenRequestHandler.prototype.performTokenRequest = function (configuration, request) {
+        TokenRequestHandler.performTokenRequest = function (configuration, request) {
             return __awaiter(this, void 0, Promise, function () {
                 var options, response, error_1;
                 return __generator(this, function (_a) {
@@ -1944,8 +1953,6 @@
             else {
                 this.acrValues = this.getAcrValuesString(appConfig.acrValues);
             }
-            this.authorizationRequestHandler = new AuthorizationRequestHandler();
-            this.tokenRequestHandler = new TokenRequestHandler();
             this.openIDConfiguration = undefined;
         }
         App.prototype.getOpenIdConfiguration = function () {
@@ -2007,7 +2014,7 @@
                             _a.label = 2;
                         case 2:
                             authorizationRequest = new AuthorizationRequest(this.clientId, this.redirectUri, this.scope, AuthorizationRequest.RESPONSE_TYPE_CODE, this.acrValues, loginReturnUrl, id_token_hint, this.request, this.login_hint);
-                            this.authorizationRequestHandler.performAuthorizationRequest(this.openIDConfiguration, authorizationRequest);
+                            AuthorizationRequestHandler.performAuthorizationRequest(this.openIDConfiguration, authorizationRequest);
                             return [2 /*return*/];
                     }
                 });
@@ -2026,7 +2033,7 @@
                             _a.label = 2;
                         case 2:
                             authorizationRequest = new AuthorizationRequest(this.clientId, this.redirectUri, this.scope, AuthorizationRequest.RESPONSE_TYPE_TOKEN, this.acrValues, loginReturnUrl, id_token_hint, this.request, this.login_hint);
-                            this.authorizationRequestHandler.performAuthorizationRequest(this.openIDConfiguration, authorizationRequest);
+                            AuthorizationRequestHandler.performAuthorizationRequest(this.openIDConfiguration, authorizationRequest);
                             return [2 /*return*/];
                     }
                 });
@@ -2039,18 +2046,10 @@
             var state = Store.getItem('state');
             var params = getParams(window.location.search);
             if (params === null || state !== params['state']) {
-                var errorMsg = {
-                    name: 'code mismatch',
-                    message: 'This could be caused by multiple browser windows attempting to authenticate to GrabId at the same time'
-                };
-                throw new Error(JSON.stringify(errorMsg));
+                throw codeMismatchError();
             }
             else if (params['error']) {
-                var errorMsg = {
-                    name: htmlEncode(params['error']),
-                    message: htmlEncode(params['error_description'])
-                };
-                throw new Error(JSON.stringify(errorMsg));
+                throw errorFromParams(params);
             }
             else {
                 var code = params['code'];
@@ -2063,18 +2062,10 @@
             var state = Store.getItem('state');
             var params = getParams(window.location.hash);
             if (params === null || state !== params['state']) {
-                var errorMsg = {
-                    name: 'code mismatch',
-                    message: 'This could be caused by multiple browser windows attempting to authenticate to GrabId at the same time'
-                };
-                throw new Error(JSON.stringify(errorMsg));
+                throw codeMismatchError();
             }
             else if (params['error']) {
-                var errorMsg = {
-                    name: htmlEncode(params['error']),
-                    message: htmlEncode(params['error_description'])
-                };
-                throw new Error(JSON.stringify(errorMsg));
+                throw errorFromParams(params);
             }
             else {
                 var accessToken = params['access_token'];
@@ -2106,46 +2097,13 @@
                                 throw new Error('Please get authorization code first');
                             }
                             tokenRequest = new TokenRequest(this.clientId, codeVerifier, TokenRequest.GRANT_TYPE_AUTHORIZATION_CODE, this.redirectUri, code);
-                            return [4 /*yield*/, this.tokenRequestHandler.performTokenRequest(this.openIDConfiguration, tokenRequest)];
+                            return [4 /*yield*/, TokenRequestHandler.performTokenRequest(this.openIDConfiguration, tokenRequest)];
                         case 3:
                             response = _a.sent();
                             tokenResponse = TokenResponse.fromJSON(response);
                             Store.setItem('access_token', tokenResponse.accessToken);
                             Store.setItem('id_token', tokenResponse.idToken);
                             return [2 /*return*/];
-                    }
-                });
-            });
-        };
-        App.prototype.makeTestEndpointRequest = function () {
-            return __awaiter(this, void 0, void 0, function () {
-                var accessToken, uri, options, response, error_2;
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
-                        case 0:
-                            console.log("This function will be deprecated as of next release.");
-                            accessToken = Store.getItem('access_token');
-                            uri = 'https://api.stg-myteksi.com/grabid/v1/oauth2/test_res';
-                            options = {
-                                method: 'GET',
-                                headers: {
-                                    'Content-Type': 'application/json; charset=utf-8',
-                                    'Authorization': 'Bearer ' + accessToken
-                                }
-                            };
-                            _a.label = 1;
-                        case 1:
-                            _a.trys.push([1, 4, , 5]);
-                            return [4 /*yield*/, fetch(uri, options)];
-                        case 2:
-                            response = _a.sent();
-                            return [4 /*yield*/, response.json()];
-                        case 3: return [2 /*return*/, _a.sent()];
-                        case 4:
-                            error_2 = _a.sent();
-                            console.error('failed to make test request', error_2);
-                            return [3 /*break*/, 5];
-                        case 5: return [2 /*return*/];
                     }
                 });
             });

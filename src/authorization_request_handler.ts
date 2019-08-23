@@ -17,7 +17,7 @@ const codeChallenge = generateCodeChallenge(codeVerifier)
 const codeChallengeMethod = 'S256'
 
 export class AuthorizationRequestHandler {
-  performAuthorizationRequest (configuration: OpenIDConfiguration, request: AuthorizationRequest): void {
+  static performAuthorizationRequest (configuration: OpenIDConfiguration, request: AuthorizationRequest): void {
     let loginReturnUri = window.location.href
     if (request.loginReturnUri) {
       loginReturnUri = request.loginReturnUri

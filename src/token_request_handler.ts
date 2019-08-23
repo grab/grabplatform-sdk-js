@@ -9,7 +9,7 @@ import { OpenIDConfiguration } from "./open_id_configuration";
  */
 
 export class TokenRequestHandler {
-  async performTokenRequest (configuration: OpenIDConfiguration, request: TokenRequest): Promise<any> {
+  static async performTokenRequest (configuration: OpenIDConfiguration, request: TokenRequest): Promise<any> {
     let options = {
       method: 'POST',
       headers: {
