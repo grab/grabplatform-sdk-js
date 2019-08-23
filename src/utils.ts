@@ -49,3 +49,15 @@ export function htmlEncode (html: string) {
   anchorNode.appendChild(document.createTextNode(html))
   return anchorNode.innerHTML
 }
+
+export function generateError(name: string, message: string) : Error {
+  return new Error(JSON.stringify({name, message}));
+}
+
+export function errorFromParams(params) : Error {
+  return generateError(htmlEncode(params['error']), htmlEncode(params['error_description']));
+}
+
+export function codeMismatchError() : Error {
+  return generateError('code mismatch', 'This could be caused by multiple browser windows attempting to authenticate to GrabId at the same time')
+}

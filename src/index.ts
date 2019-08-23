@@ -9,7 +9,7 @@
 import { OpenIDConfiguration } from './open_id_configuration'
 import { AuthorizationRequest, AuthorizationRequestHandler } from './authorization_request_handler'
 import { TokenRequest, TokenRequestHandler, TokenResponse } from './token_request_handler'
-import { getParams, htmlEncode } from './utils'
+import { getParams, codeMismatchError, errorFromParams } from './utils'
 import Store from './store'
 import { GrabConfig, AcrValues } from './grabConfig';
 import { AuthenticationData } from './authenticationData';
@@ -24,8 +24,6 @@ export default class App {
   request: string;
   login_hint: string;
 
-  authorizationRequestHandler: AuthorizationRequestHandler;
-  tokenRequestHandler: TokenRequestHandler;
   openIDConfiguration: OpenIDConfiguration;
 
   static GrabUrls = {
@@ -51,8 +49,6 @@ export default class App {
       this.acrValues = this.getAcrValuesString(appConfig.acrValues);
     }
 
-    this.authorizationRequestHandler = new AuthorizationRequestHandler()
-    this.tokenRequestHandler = new TokenRequestHandler()
     this.openIDConfiguration = undefined
   }
 
@@ -96,7 +92,7 @@ export default class App {
     return acrValuesArray.join(' ');
   }
 
-  async makeAuthorizationRequest (loginReturnUrl: string, id_token_hint: string): Promise<void> {
+  async makeAuthorizationRequest (loginReturnUrl?: string, id_token_hint?: string): Promise<void> {
     if (!this.openIDConfiguration) {
       await this.getOpenIdConfiguration();
     }
@@ -112,10 +108,10 @@ export default class App {
       this.request,
       this.login_hint,
     )
-    this.authorizationRequestHandler.performAuthorizationRequest(this.openIDConfiguration, authorizationRequest)
+    AuthorizationRequestHandler.performAuthorizationRequest(this.openIDConfiguration, authorizationRequest)
   }
 
-  async makeImplicitAuthorizationRequest (loginReturnUrl: string, id_token_hint: string): Promise<void> {
+  async makeImplicitAuthorizationRequest (loginReturnUrl?: string, id_token_hint?: string): Promise<void> {
     if (!this.openIDConfiguration) {
       await this.getOpenIdConfiguration();
     }
@@ -131,7 +127,7 @@ export default class App {
       this.request,
       this.login_hint,
     )
-    this.authorizationRequestHandler.performAuthorizationRequest(this.openIDConfiguration, authorizationRequest)
+    AuthorizationRequestHandler.performAuthorizationRequest(this.openIDConfiguration, authorizationRequest)
   }
 
   static getLoginReturnURI (): string {
@@ -143,17 +139,9 @@ export default class App {
     let params = getParams(window.location.search)
 
     if (params === null || state !== params['state']) {
-      let errorMsg = {
-        name: 'code mismatch',
-        message: 'This could be caused by multiple browser windows attempting to authenticate to GrabId at the same time'
-      }
-      throw new Error(JSON.stringify(errorMsg))
+      throw codeMismatchError();
     } else if (params['error']) {
-      let errorMsg = {
-        name: htmlEncode(params['error']),
-        message: htmlEncode(params['error_description'])
-      }
-      throw new Error(JSON.stringify(errorMsg))
+      throw errorFromParams(params);
     } else {
       let code = params['code']
       if (code) {
@@ -167,17 +155,9 @@ export default class App {
     let params = getParams(window.location.hash)
 
     if (params === null || state !== params['state']) {
-      let errorMsg = {
-        name: 'code mismatch',
-        message: 'This could be caused by multiple browser windows attempting to authenticate to GrabId at the same time'
-      }
-      throw new Error(JSON.stringify(errorMsg))
+      throw codeMismatchError();
     } else if (params['error']) {
-      let errorMsg = {
-        name: htmlEncode(params['error']),
-        message: htmlEncode(params['error_description'])
-      }
-      throw new Error(JSON.stringify(errorMsg))
+      throw errorFromParams(params);
     } else {
       let accessToken = params['access_token']
       if (accessToken) {
@@ -213,31 +193,10 @@ export default class App {
       code
     )
 
-    const response = await this.tokenRequestHandler.performTokenRequest(this.openIDConfiguration, tokenRequest);
+    const response = await TokenRequestHandler.performTokenRequest(this.openIDConfiguration, tokenRequest);
     let tokenResponse = TokenResponse.fromJSON(response);
     Store.setItem('access_token', tokenResponse.accessToken);
     Store.setItem('id_token', tokenResponse.idToken);
-  }
-
-  async makeTestEndpointRequest () {
-    console.log("This function will be deprecated as of next release.");
-    let accessToken = Store.getItem('access_token')
-    let uri = 'https://api.stg-myteksi.com/grabid/v1/oauth2/test_res'
-    let options = {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json; charset=utf-8',
-        'Authorization': 'Bearer ' + accessToken
-      }
-    }
-
-    try {
-      const response = await fetch(uri, options);
-      return await response.json();
-    }
-    catch (error) {
-      console.error('failed to make test request', error);
-    }
   }
 
   static getResult (): AuthenticationData {
