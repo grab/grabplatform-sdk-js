@@ -1300,6 +1300,7 @@
                 code_challenge: codeChallenge,
                 acr_values: request.acrValues,
                 id_token_hint: request.id_token_hint,
+                ui_locales: request.ui_locales,
             };
             if (request.request) {
                 requestMap.request = request.request;
@@ -1324,7 +1325,7 @@
     loginReturnUri: Optional parameter - if provided, will store the provided value in local storage as the login return URI. If absent, window.location.href will be stored as the login return uri
     */
     var AuthorizationRequest = /** @class */ (function () {
-        function AuthorizationRequest(clientId, redirectUri, scope, responseType, acrValues, loginReturnUri, id_token_hint, request, login_hint) {
+        function AuthorizationRequest(clientId, redirectUri, scope, responseType, acrValues, loginReturnUri, id_token_hint, request, login_hint, ui_locales) {
             this.clientId = clientId;
             this.redirectUri = redirectUri;
             this.scope = scope;
@@ -1334,6 +1335,7 @@
             this.id_token_hint = id_token_hint;
             this.request = request;
             this.login_hint = login_hint;
+            this.ui_locales = ui_locales;
         }
         AuthorizationRequest.RESPONSE_TYPE_CODE = 'code';
         AuthorizationRequest.RESPONSE_TYPE_TOKEN = 'token';
@@ -1947,6 +1949,7 @@
             this.scope = appConfig.scope;
             this.request = appConfig.request;
             this.login_hint = appConfig.login_hint;
+            this.ui_locales = appConfig.ui_locales;
             if (typeof (appConfig.acrValues) === 'string') {
                 this.acrValues = appConfig.acrValues;
             }
@@ -2013,7 +2016,7 @@
                             _a.sent();
                             _a.label = 2;
                         case 2:
-                            authorizationRequest = new AuthorizationRequest(this.clientId, this.redirectUri, this.scope, AuthorizationRequest.RESPONSE_TYPE_CODE, this.acrValues, loginReturnUrl, id_token_hint, this.request, this.login_hint);
+                            authorizationRequest = new AuthorizationRequest(this.clientId, this.redirectUri, this.scope, AuthorizationRequest.RESPONSE_TYPE_CODE, this.acrValues, loginReturnUrl, id_token_hint, this.request, this.login_hint, this.ui_locales);
                             AuthorizationRequestHandler.performAuthorizationRequest(this.openIDConfiguration, authorizationRequest);
                             return [2 /*return*/];
                     }
@@ -2032,7 +2035,7 @@
                             _a.sent();
                             _a.label = 2;
                         case 2:
-                            authorizationRequest = new AuthorizationRequest(this.clientId, this.redirectUri, this.scope, AuthorizationRequest.RESPONSE_TYPE_TOKEN, this.acrValues, loginReturnUrl, id_token_hint, this.request, this.login_hint);
+                            authorizationRequest = new AuthorizationRequest(this.clientId, this.redirectUri, this.scope, AuthorizationRequest.RESPONSE_TYPE_TOKEN, this.acrValues, loginReturnUrl, id_token_hint, this.request, this.login_hint, this.ui_locales);
                             AuthorizationRequestHandler.performAuthorizationRequest(this.openIDConfiguration, authorizationRequest);
                             return [2 /*return*/];
                     }

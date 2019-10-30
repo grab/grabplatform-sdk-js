@@ -23,6 +23,7 @@ export default class App {
   acrValues: string;
   request: string;
   login_hint: string;
+  ui_locales: string;
 
   openIDConfiguration: OpenIDConfiguration;
 
@@ -43,6 +44,7 @@ export default class App {
     this.scope = appConfig.scope
     this.request = appConfig.request
     this.login_hint = appConfig.login_hint;
+    this.ui_locales = appConfig.ui_locales;
     if (typeof(appConfig.acrValues) === 'string') {
       this.acrValues = appConfig.acrValues;
     } else {
@@ -107,6 +109,7 @@ export default class App {
       id_token_hint,
       this.request,
       this.login_hint,
+      this.ui_locales,
     )
     AuthorizationRequestHandler.performAuthorizationRequest(this.openIDConfiguration, authorizationRequest)
   }
@@ -126,6 +129,7 @@ export default class App {
       id_token_hint,
       this.request,
       this.login_hint,
+      this.ui_locales,
     )
     AuthorizationRequestHandler.performAuthorizationRequest(this.openIDConfiguration, authorizationRequest)
   }
