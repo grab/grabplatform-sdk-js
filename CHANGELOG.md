@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.1.9] - 2019-10-30
+### Added
+- The Grab Javascript SDK now supports the ui_locales parameter. This allows the caller to override the language shown to the user during authentication flows.
+
 ## [1.1.8] - 2019-08-22
 ### Added
 - Adding tests for main functions handling authorization

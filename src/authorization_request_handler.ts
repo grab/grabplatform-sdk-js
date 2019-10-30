@@ -38,6 +38,7 @@ export class AuthorizationRequestHandler {
       code_challenge: codeChallenge,
       acr_values: request.acrValues,
       id_token_hint: request.id_token_hint,
+      ui_locales: request.ui_locales,
     }
 
     if (request.request) {
@@ -79,6 +80,7 @@ export class AuthorizationRequest {
   id_token_hint: string;
   request: string;
   login_hint: string;
+  ui_locales: string;
 
   constructor (
     clientId: string,
@@ -89,7 +91,8 @@ export class AuthorizationRequest {
     loginReturnUri: string,
     id_token_hint?: string,
     request?: string,
-    login_hint?: string
+    login_hint?: string,
+    ui_locales?: string
   ) {
     this.clientId = clientId
     this.redirectUri = redirectUri
@@ -100,5 +103,6 @@ export class AuthorizationRequest {
     this.id_token_hint = id_token_hint
     this.request = request
     this.login_hint = login_hint
+    this.ui_locales = ui_locales;
   }
 }
