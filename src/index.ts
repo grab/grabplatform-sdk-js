@@ -24,7 +24,7 @@ export default class App {
   request: string;
   login_hint: string;
   ui_locales: string;
-
+  state: string;
   openIDConfiguration: OpenIDConfiguration;
 
   static GrabUrls = {
@@ -45,6 +45,7 @@ export default class App {
     this.request = appConfig.request
     this.login_hint = appConfig.login_hint;
     this.ui_locales = appConfig.ui_locales;
+    this.state = appConfig.state;
     if (typeof(appConfig.acrValues) === 'string') {
       this.acrValues = appConfig.acrValues;
     } else {
@@ -110,6 +111,7 @@ export default class App {
       this.request,
       this.login_hint,
       this.ui_locales,
+      this.state,
     )
     AuthorizationRequestHandler.performAuthorizationRequest(this.openIDConfiguration, authorizationRequest)
   }
@@ -130,6 +132,7 @@ export default class App {
       this.request,
       this.login_hint,
       this.ui_locales,
+      this.state,
     )
     AuthorizationRequestHandler.performAuthorizationRequest(this.openIDConfiguration, authorizationRequest)
   }
