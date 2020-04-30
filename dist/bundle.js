@@ -1273,7 +1273,6 @@
      *
      */
     var nonce = generateRandomString(16);
-    var state = generateRandomString(7);
     var codeVerifier = generateCodeVerifier(64);
     var codeChallenge = generateCodeChallenge(codeVerifier);
     var codeChallengeMethod = 'S256';
@@ -1282,6 +1281,7 @@
         }
         AuthorizationRequestHandler.performAuthorizationRequest = function (configuration, request) {
             var loginReturnUri = window.location.href;
+            var state = request.state ? request.state : generateRandomString(7);
             if (request.loginReturnUri) {
                 loginReturnUri = request.loginReturnUri;
             }
@@ -1325,7 +1325,7 @@
     loginReturnUri: Optional parameter - if provided, will store the provided value in local storage as the login return URI. If absent, window.location.href will be stored as the login return uri
     */
     var AuthorizationRequest = /** @class */ (function () {
-        function AuthorizationRequest(clientId, redirectUri, scope, responseType, acrValues, loginReturnUri, id_token_hint, request, login_hint, ui_locales) {
+        function AuthorizationRequest(clientId, redirectUri, scope, responseType, acrValues, loginReturnUri, id_token_hint, request, login_hint, ui_locales, state) {
             this.clientId = clientId;
             this.redirectUri = redirectUri;
             this.scope = scope;
@@ -1336,6 +1336,7 @@
             this.request = request;
             this.login_hint = login_hint;
             this.ui_locales = ui_locales;
+            this.state = state;
         }
         AuthorizationRequest.RESPONSE_TYPE_CODE = 'code';
         AuthorizationRequest.RESPONSE_TYPE_TOKEN = 'token';
@@ -1950,6 +1951,7 @@
             this.request = appConfig.request;
             this.login_hint = appConfig.login_hint;
             this.ui_locales = appConfig.ui_locales;
+            this.state = appConfig.state;
             if (typeof (appConfig.acrValues) === 'string') {
                 this.acrValues = appConfig.acrValues;
             }
@@ -2016,7 +2018,7 @@
                             _a.sent();
                             _a.label = 2;
                         case 2:
-                            authorizationRequest = new AuthorizationRequest(this.clientId, this.redirectUri, this.scope, AuthorizationRequest.RESPONSE_TYPE_CODE, this.acrValues, loginReturnUrl, id_token_hint, this.request, this.login_hint, this.ui_locales);
+                            authorizationRequest = new AuthorizationRequest(this.clientId, this.redirectUri, this.scope, AuthorizationRequest.RESPONSE_TYPE_CODE, this.acrValues, loginReturnUrl, id_token_hint, this.request, this.login_hint, this.ui_locales, this.state);
                             AuthorizationRequestHandler.performAuthorizationRequest(this.openIDConfiguration, authorizationRequest);
                             return [2 /*return*/];
                     }
@@ -2035,7 +2037,7 @@
                             _a.sent();
                             _a.label = 2;
                         case 2:
-                            authorizationRequest = new AuthorizationRequest(this.clientId, this.redirectUri, this.scope, AuthorizationRequest.RESPONSE_TYPE_TOKEN, this.acrValues, loginReturnUrl, id_token_hint, this.request, this.login_hint, this.ui_locales);
+                            authorizationRequest = new AuthorizationRequest(this.clientId, this.redirectUri, this.scope, AuthorizationRequest.RESPONSE_TYPE_TOKEN, this.acrValues, loginReturnUrl, id_token_hint, this.request, this.login_hint, this.ui_locales, this.state);
                             AuthorizationRequestHandler.performAuthorizationRequest(this.openIDConfiguration, authorizationRequest);
                             return [2 /*return*/];
                     }
