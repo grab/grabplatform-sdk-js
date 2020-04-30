@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.1.10] - 2019-10-30
+## [1.1.10] - 2020-04-30
 ### Added
 - The Grab Javascript SDK now supports the state parameter. This is an opaque value used to maintain state between the request and the callback. This can also be used by the caller to maintain session specific state.
 
