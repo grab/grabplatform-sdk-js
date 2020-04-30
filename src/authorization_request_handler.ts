@@ -11,14 +11,14 @@ import Store from './store'
 import { OpenIDConfiguration } from './open_id_configuration';
 
 const nonce = generateRandomString(16)
-const state = generateRandomString(7)
 const codeVerifier = generateCodeVerifier(64)
 const codeChallenge = generateCodeChallenge(codeVerifier)
 const codeChallengeMethod = 'S256'
 
 export class AuthorizationRequestHandler {
   static performAuthorizationRequest (configuration: OpenIDConfiguration, request: AuthorizationRequest): void {
-    let loginReturnUri = window.location.href
+    let loginReturnUri = window.location.href;
+    const state = request.state ? request.state : generateRandomString(7);
     if (request.loginReturnUri) {
       loginReturnUri = request.loginReturnUri
     }
@@ -81,7 +81,7 @@ export class AuthorizationRequest {
   request: string;
   login_hint: string;
   ui_locales: string;
-
+  state: string;
   constructor (
     clientId: string,
     redirectUri: string,
@@ -92,7 +92,8 @@ export class AuthorizationRequest {
     id_token_hint?: string,
     request?: string,
     login_hint?: string,
-    ui_locales?: string
+    ui_locales?: string,
+    state?: string,
   ) {
     this.clientId = clientId
     this.redirectUri = redirectUri
@@ -103,6 +104,7 @@ export class AuthorizationRequest {
     this.id_token_hint = id_token_hint
     this.request = request
     this.login_hint = login_hint
-    this.ui_locales = ui_locales;
+    this.ui_locales = ui_locales
+    this.state = state;
   }
 }

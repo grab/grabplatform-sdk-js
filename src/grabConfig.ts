@@ -6,6 +6,7 @@ export interface GrabConfig {
   request?: string;
   login_hint?: string;
   ui_locales?: string;
+  state?: string;
 }
 
 export interface AcrValues {
